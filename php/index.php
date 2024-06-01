@@ -1,6 +1,6 @@
 
 <?php
-phpinfo();
+#phpinfo();
 #require_once 'connect.php';
 #require_once 'inscription.html';
 require_once('liste-stagiaires.php');

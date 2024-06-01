@@ -1,0 +1,42 @@
+---
+- name: Deploy Docker Compose application
+  hosts: local
+  become: true
+  vars:
+    myfolder: app-web-group1
+  tasks:
+    - name: Disable CD-ROM repository
+      lineinfile:
+        path: /etc/apt/sources.list
+        regexp: '^deb cdrom:'
+        line: '# deb cdrom:'
+        state: present
+
+    - name: Update APT package index
+      apt:
+        update_cache: yes
+
+    - name: Ensure Docker is installed
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Ensure docker-compose is installed
+      apt:
+        name: docker-compose
+        state: present
+        update_cache: yes
+
+    - name: Start Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+   
+    - name: Run Docker Compose
+      community.docker.docker_compose:
+        project_src: /home/dalila/{{ myfolder }}
+        state: present
+        build: true
