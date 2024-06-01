@@ -1,0 +1,28 @@
+---
+- name: Copy SSH key to remote server
+  hosts: target
+
+  become: true
+  tasks:
+    - name: Ensure the target directory exists
+      file:
+        path: /home/{{ ansible_user }}/.ssh
+        state: directory
+        mode: '0700'
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Copy SSH public key to remote server
+      copy:
+        src: ~/.ssh/id_rsa.pub
+        dest: /home/{{ ansible_user }}/.ssh/authorized_keys
+        mode: '0644'
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Ensure correct permissions on authorized_keys
+      file:
+        path: /home/{{ ansible_user }}/.ssh/authorized_keys
+        mode: '0644'
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
