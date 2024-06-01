@@ -24,7 +24,7 @@ services:
     ports:
       - 3307:3306
     volumes:
-      - .mysql/stagiaires.sql:/docker-entrypoint-initdb.d/stagiaires.sql:ro
+      - ./mysql/stagiaires.sql:/docker-entrypoint-initdb.d/stagiaires.sql:ro
 
   phpma:
     image: phpmyadmin/phpmyadmin
