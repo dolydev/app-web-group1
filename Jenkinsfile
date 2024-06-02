@@ -3,57 +3,50 @@ pipeline {
 
     environment {
         DOCKER_COMPOSE = 'docker-compose.yaml'
+        DOCKER_IMAGE_NAME = 'dalila854/app-web-group1'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Cloner le dépôt de votre code source
                 git branch: 'main', url: 'https://github.com/dolydev/app-web-group1.git'
             }
         }
 
-        stage('Build') {
+        stage('OWASP Dependency Check') {
             steps {
                 script {
-                    // Ajoutez une commande pour vérifier les autorisations du fichier docker-compose.yaml
-                    sh 'ls -l $DOCKER_COMPOSE'
-                    
-                    // Construire les images Docker définies dans le fichier docker-compose.yml
-                    sh 'docker-compose -f $DOCKER_COMPOSE build'
+                    dependencyCheck additionalArguments: '--scan . --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
+                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Trivy FS Scan') {
             steps {
                 script {
-                    // Déployer les conteneurs Docker en arrière-plan
-                    sh 'docker-compose -f $DOCKER_COMPOSE up -d'
+                    sh "trivy fs . > trivyfs.txt"
                 }
             }
         }
 
-        stage('Test') {
+        stage("Docker Build & Push") {
             steps {
                 script {
-                    // Ajoutez ici vos scripts de test
-                    // Par exemple, vous pouvez exécuter des tests HTTP pour vérifier que le serveur web est en cours d'exécution
-                    sh '''
-                    echo "Waiting for services to be ready..."
-                    sleep 30
-                    echo "Testing PHP container..."
-                    curl -f http://localhost:8000 || exit 1
-                    echo "Testing phpMyAdmin..."
-                    curl -f http://localhost:8899 || exit 1
-
-                    '''
+                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
+                        sh "docker build -t $DOCKER_IMAGE_NAME ."
+                        sh "docker push $DOCKER_IMAGE_NAME:latest"
+                    }
                 }
             }
         }
 
-     
+        stage("TRIVY Image Scan") {
+            steps {
+                script {
+                    sh "trivy image $DOCKER_IMAGE_NAME:latest > trivy.txt"
+                }
+            }
+        }
     }
-
-
 }
