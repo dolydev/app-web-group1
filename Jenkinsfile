@@ -13,7 +13,7 @@ pipeline {
             steps {
                 script {
                     // Run your Ansible playbook
-                    sh 'ansible-playbook -i ansible/inventory.ini ansible/playbook-deploy-docker-compose.yml -u dalila --ask-pass -K'
+                    sh 'ansible-playbook -i ansible/inventory.ini ansible/playbook-deploy-docker-compose.yaml -u dalila --ask-pass -K'
                 }
             }
         }
