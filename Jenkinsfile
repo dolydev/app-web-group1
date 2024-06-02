@@ -13,18 +13,7 @@ pipeline {
             }
         }
         
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout([$class: 'GitSCM', 
-                    branches: [[name: env.BRANCH_NAME]], 
-                    doGenerateSubmoduleConfigurations: false, 
-                    extensions: [], 
-                    submoduleCfg: [], 
-                    userRemoteConfigs: [[url: env.GIT_REPO_URL]]
-                ])
-            }
-        }
+ 
         stage('Verify Workspace') {
             steps {
                 sh 'pwd'
