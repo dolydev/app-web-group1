@@ -10,12 +10,21 @@ RUN docker-php-ext-install mysqli pdo pdo_mysql
 # Copier les fichiers de l'application dans le répertoire du serveur web
 COPY . /var/www/html/
 
+# Copier le fichier de configuration Apache personnalisé
+COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
+
 # Configurer le ServerName pour éviter les avertissements
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf 
 
 # Donner les permissions appropriées aux fichiers copiés
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
+
+# Activer le module rewrite d'Apache (si nécessaire)
+RUN a2enmod rewrite
+
+# Activer la configuration par défaut du site
+RUN a2ensite 000-default.conf
 
 # Exposer le port 80
 EXPOSE 80
