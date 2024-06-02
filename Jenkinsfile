@@ -48,15 +48,20 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to container'){
-           steps {
-                script {
-                    // Arrêter et supprimer tout conteneur en cours d'exécution avec le même nom
-                    sh 'docker stop app-web-group1 || true && docker rm app-web-group1 || true'
+        #stage('Deploy to container'){
+         #  steps {
+          #      script {
+           #         // Arrêter et supprimer tout conteneur en cours d'exécution avec le même nom
+            #        sh 'docker stop app-web-group1 || true && docker rm app-web-group1 || true'
                     
-                    // Déployer le conteneur
-                    sh 'docker run -d --name app-web-group1 -p 8000:80 $DOCKER_IMAGE_NAME:latest'
-                }
+             #       // Déployer le conteneur
+             #       sh 'docker run -d --name app-web-group1 -p 8000:80 $DOCKER_IMAGE_NAME:latest'
+              "  }
+            #}
+       # }
+          stage('Deploy') {
+            steps {
+                sh 'docker-compose -f $DOCKER_COMPOSE up -d'
             }
         }
         
