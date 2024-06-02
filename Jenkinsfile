@@ -49,8 +49,26 @@ pipeline {
             }
         }
         stage('Deploy to container'){
-            steps{
-                sh 'docker run -d --name app-web-group1 -p 3000:3000 $DOCKER_IMAGE_NAME:latest'
+           steps {
+                script {
+                    // Arrêter et supprimer tout conteneur en cours d'exécution avec le même nom
+                    sh 'docker stop app-web-group1 || true && docker rm app-web-group1 || true'
+                    
+                    // Déployer le conteneur
+                    sh 'docker run -d --name app-web-group1 -p 3000:80 $DOCKER_IMAGE_NAME:latest'
+                }
+            }
+        }
+        
+        stage('Test Deployment') {
+            steps {
+                script {
+                    // Attendre que les services soient prêts
+                    sleep 30
+
+                    // Test du conteneur déployé
+                    sh 'curl -v http://localhost:3000'
+                }
             }
         }
     }
