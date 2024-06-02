@@ -49,14 +49,14 @@ pipeline {
             }
         }
 	
-	stage('Deploy to container') {
+	stage('Deploy with Docker Compose') {
             steps {
                 script {
-                    // Arrêter et supprimer tout conteneur en cours d'exécution avec le même nom
-                    sh 'docker stop app-web-group1 || true && docker rm app-web-group1 || true'
+                    // Arrêter et supprimer les conteneurs existants
+                    sh 'docker-compose down || true'
                     
-                    // Déployer le conteneur
-                    sh 'docker run -d --name app-web-group1 -p 3000:80 $DOCKER_IMAGE_NAME:latest'
+                    // Déployer les conteneurs avec Docker Compose
+                    sh 'docker-compose up -d'
                 }
             }
         }
