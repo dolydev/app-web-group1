@@ -30,7 +30,7 @@ pipeline {
             }
         }
 
-        stage("Docker Build & Push") {
+        stage('Docker Build & Push') {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
@@ -41,16 +41,35 @@ pipeline {
             }
         }
 
-        stage("TRIVY Image Scan") {
+        stage('TRIVY Image Scan') {
             steps {
                 script {
                     sh "trivy image $DOCKER_IMAGE_NAME:latest > trivy.txt"
                 }
             }
         }
-        stage('Deploy to container'){
-            steps{
-                sh 'docker run -d --name app-web-group1 -p 3000:3000 $DOCKER_IMAGE_NAME:latest'
+
+        stage('Deploy to container') {
+            steps {
+                script {
+                    // Arrêter et supprimer tout conteneur en cours d'exécution avec le même nom
+                    sh 'docker stop app-web-group1 || true && docker rm app-web-group1 || true'
+                    
+                    // Déployer le conteneur
+                    sh 'docker run -d --name app-web-group1 -p 3000:3000 $DOCKER_IMAGE_NAME:latest'
+                }
+            }
+        }
+        
+        stage('Test Deployment') {
+            steps {
+                script {
+                    // Attendre que les services soient prêts
+                    sleep 30
+
+                    // Test du conteneur déployé
+                    sh 'curl -f http://localhost:3000 || exit 1'
+                }
             }
         }
     }
