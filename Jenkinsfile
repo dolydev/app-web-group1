@@ -13,26 +13,7 @@ pipeline {
             }
         }
         
- 
-        stage('Verify Workspace') {
-            steps {
-                sh 'pwd'
-                sh 'ls -la'
-                sh 'ls -la ansible'
-            }
-        }
-        stage('Run Ansible playbook') {
-            when {
-                not { failed() }
-            }
-            steps {
-                sh 'ansible-playbook -i ansible/inventory.ini ansible/playbook-deploy-docker-compose.yaml -u dalila --ask-pass -K'
-            }
-        }
-
-
-        
-     
+      
     }
 
 
