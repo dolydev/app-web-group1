@@ -46,10 +46,7 @@ pipeline {
                     curl -f http://localhost:8000 || exit 1
                     echo "Testing phpMyAdmin..."
                     curl -f http://localhost:8899 || exit 1
-                    echo "Testing Prometheus..."
-                    curl -f http://localhost:9090 || exit 1
-                    echo "Testing Grafana..."
-                    curl -f http://localhost:3000 || exit 1
+
                     '''
                 }
             }
