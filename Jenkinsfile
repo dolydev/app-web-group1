@@ -20,6 +20,25 @@ pipeline {
             }
         }
         
+       stage('Run Ansible playbook') {
+            when {
+                not { failed() }
+            }
+            steps {
+                script {
+                    def playbookPath = 'ansible/playbook-deploy-docker-compose.yml'
+                    def inventoryPath = 'ansible/inventory.ini'
+                    def user = 'dalila'
+
+                    // Check if the playbook exists
+                    if (fileExists(playbookPath)) {
+                        sh "ansible-playbook -i ${inventoryPath} ${playbookPath} -u ${user} --ask-pass -K"
+                    } else {
+                        error "Playbook ${playbookPath} not found"
+                    }
+                }
+            }
+        }
       
     }
 
