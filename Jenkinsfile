@@ -60,6 +60,16 @@ pipeline {
                 }
             }
         }
+	 stage('Test Deployment') {
+            steps {
+                script {
+                    // Attendre que les services soient prêts
+                    sleep 30
 
+                    // Test du conteneur déployé
+                    sh 'curl -f http://localhost:3000 || exit 1'
+                }
+            }
+        }
     }
 }
