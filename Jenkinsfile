@@ -21,9 +21,7 @@ pipeline {
         }
         
        stage('Run Ansible playbook') {
-            when {
-                not { failed() }
-            }
+           
             steps {
                 script {
                     def playbookPath = 'ansible/playbook-deploy-docker-compose.yml'
