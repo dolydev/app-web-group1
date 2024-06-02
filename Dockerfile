@@ -1,21 +1,20 @@
-# Utiliser l'image officielle PHP avec Apache
-FROM php:8.2-apache
+# Utiliser une image de base officielle Node.js
+FROM node:14
 
-# Mettre à jour les packages et installer les extensions nécessaires
-RUN apt-get update && apt-get upgrade -y
+# Définir le répertoire de travail
+WORKDIR /app
 
-# Installer les extensions PHP nécessaires pour MySQL
-RUN docker-php-ext-install mysqli pdo pdo_mysql
+# Copier package.json et package-lock.json
+COPY package*.json ./
 
-# Copier les fichiers de l'application dans le répertoire du serveur web
-COPY . /var/www/html/
+# Installer les dépendances
+RUN npm install
 
-# Donner les permissions appropriées aux fichiers copiés
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html
+# Copier le reste des fichiers de l'application
+COPY . .
 
-# Exposer le port 80
-EXPOSE 80
+# Exposer le port de l'application
+EXPOSE 3000
 
-# Commande pour démarrer Apache (automatique avec l'image de base)
-CMD ["apache2-foreground"]
+# Démarrer l'application
+CMD ["node", "app.js"]
