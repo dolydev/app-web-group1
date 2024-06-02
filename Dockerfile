@@ -15,7 +15,7 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
 
 # Exposer le port 80
-EXPOSE 80
+EXPOSE 3000
 
 # Commande pour démarrer Apache (automatique avec l'image de base)
 CMD ["apache2-foreground"]
