@@ -48,27 +48,9 @@ pipeline {
                 }
             }
         }
-	
-	stage('Deploy with Docker Compose') {
-            steps {
-                script {
-                    // Arrêter et supprimer les conteneurs existants
-                    sh 'docker-compose down || true'
-                    
-                    // Déployer les conteneurs avec Docker Compose
-                    sh 'docker-compose up -d'
-                }
-            }
-        }
-	 stage('Test Deployment') {
-            steps {
-                script {
-                    // Attendre que les services soient prêts
-                    sleep 30
-
-                   // Test du conteneur déployé
-                    sh 'curl -v http://localhost:3000'
-                }
+        stage('Deploy to container'){
+            steps{
+                sh 'docker run -d --name app-web-group1 -p 3000:3000 $DOCKER_IMAGE_NAME:latest'
             }
         }
     }
