@@ -3,74 +3,57 @@ pipeline {
 
     environment {
         DOCKER_COMPOSE = 'docker-compose.yaml'
-        DOCKER_IMAGE_NAME = 'dalila854/app-web-group1'
     }
 
     stages {
         stage('Checkout') {
             steps {
+                // Cloner le dépôt de votre code source
                 git branch: 'main', url: 'https://github.com/dolydev/app-web-group1.git'
             }
         }
 
-        stage('OWASP Dependency Check') {
+        stage('Build') {
             steps {
                 script {
-                    dependencyCheck additionalArguments: '--scan . --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
-                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-                }
-            }
-        }
-
-        stage('Trivy FS Scan') {
-            steps {
-                script {
-                    sh "trivy fs . > trivyfs.txt"
-                }
-            }
-        }
-
-        stage('Docker Build & Push') {
-            steps {
-                script {
-                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
-                        sh "docker build -t $DOCKER_IMAGE_NAME ."
-                        sh "docker push $DOCKER_IMAGE_NAME:latest"
-                    }
-                }
-            }
-        }
-
-        stage('TRIVY Image Scan') {
-            steps {
-                script {
-                    sh "trivy image $DOCKER_IMAGE_NAME:latest > trivy.txt"
-                }
-            }
-        }
-
-        stage('Deploy to container') {
-            steps {
-                script {
-                    // Arrêter et supprimer tout conteneur en cours d'exécution avec le même nom
-                    sh 'docker stop app-web-group1 || true && docker rm app-web-group1 || true'
+                    // Ajoutez une commande pour vérifier les autorisations du fichier docker-compose.yaml
+                    sh 'ls -l $DOCKER_COMPOSE'
                     
-                    // Déployer le conteneur
-                    sh 'docker run -d --name app-web-group1 -p 3000:3000 $DOCKER_IMAGE_NAME:latest'
+                    // Construire les images Docker définies dans le fichier docker-compose.yml
+                    sh 'docker-compose -f $DOCKER_COMPOSE build'
                 }
             }
         }
-        
-        stage('Test Deployment') {
+
+        stage('Deploy') {
             steps {
                 script {
-                    // Attendre que les services soient prêts
-                    sleep 30
-
-                    // Test du conteneur déployé
-                    sh 'curl -f http://localhost:3000 || exit 1'
+                    // Déployer les conteneurs Docker en arrière-plan
+                    sh 'docker-compose -f $DOCKER_COMPOSE up -d'
                 }
             }
         }
+
+        stage('Test') {
+            steps {
+                script {
+                    // Ajoutez ici vos scripts de test
+                    // Par exemple, vous pouvez exécuter des tests HTTP pour vérifier que le serveur web est en cours d'exécution
+                    sh '''
+                    echo "Waiting for services to be ready..."
+                    sleep 30
+                    echo "Testing PHP container..."
+                    curl -f http://localhost:8000 || exit 1
+                    echo "Testing phpMyAdmin..."
+                    curl -f http://localhost:8899 || exit 1
+
+                    '''
+                }
+            }
+        }
+
+     
     }
+
+
 }
