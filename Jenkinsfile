@@ -48,5 +48,10 @@ pipeline {
                 }
             }
         }
+        stage('Deploy to container'){
+            steps{
+                sh 'docker run -d --name app-web-group1 -p 3000:3000 $DOCKER_IMAGE_NAME:latest'
+            }
+        }
     }
 }
