@@ -67,7 +67,7 @@ pipeline {
                     sleep 30
 
                     // Test du conteneur déployé
-                    sh 'curl -v http://localhost:3000'
+                    sh 'curl -v http://localhost:8000'
                 }
             }
         }
