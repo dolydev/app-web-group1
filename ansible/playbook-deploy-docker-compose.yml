@@ -37,6 +37,6 @@
    
     - name: Run Docker Compose
       community.docker.docker_compose:
-        project_src: /home/dalila/{{ myfolder }}
+        project_src: /home/{{ ansible_user }}/{{ myfolder }}
         state: present
         build: true
