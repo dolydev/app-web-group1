@@ -16,6 +16,9 @@ pipeline {
         stage('Build') {
             steps {
                 script {
+                    // Ajoutez une commande pour vérifier les autorisations du fichier docker-compose.yaml
+                    sh 'ls -l $DOCKER_COMPOSE'
+                    
                     // Construire les images Docker définies dans le fichier docker-compose.yml
                     sh 'docker-compose -f $DOCKER_COMPOSE build'
                 }
