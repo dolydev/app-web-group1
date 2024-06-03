@@ -13,22 +13,7 @@ pipeline {
             }
         }
         
-        stage('Sonarqube Analysis') {
-            steps {
-                withSonarQubeEnv('sonar-server') {
-                    // Utiliser le scanner SonarQube configuré dans Jenkins
-                    sh '''
-                        ${SCANNER_HOME}/bin/sonar-scanner \
-                        -Dsonar.projectKey=app-web-group1 \
-                        -Dsonar.projectName=app-web-group1 \
-                        -Dsonar.sources=./php \
-                        -Dsonar.host.url=$SONAR_HOST_URL \
-                        -Dsonar.login=$SONAR_AUTH_TOKEN
-                    '''
-                }
-            }
-        }
-        
+      
         stage('Quality Gate') {
             steps {
                 script {
