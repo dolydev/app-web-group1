@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKER_COMPOSE = 'docker-compose.yaml'
         DOCKER_IMAGE_NAME = 'dalila854/app-web-group1'
+        SCANNER_HOME = tool 'sonar-scanner'
     }
 
     stages {
@@ -14,18 +15,16 @@ pipeline {
         }
         
       
-        stage('Quality Gate') {
+       // Étape: Analyse SonarQube
+        stage("SonarQube Analysis") {
             steps {
-                script {
-                    waitForQualityGate abortPipeline: true, credentialsId: 'Sonar-token'
+                withSonarQubeEnv('sonar-server') {
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=app-web-group1 \
+                    -Dsonar.projectKey=app-web-group1 '''
                 }
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                sh "npm install"
-            }
         }
 
         stage('OWASP Dependency Check') {
