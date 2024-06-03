@@ -48,13 +48,12 @@ pipeline {
                 }
             }
         }
-     
-          stage('Deploy') {
+	stage('Deploy to container') {
             steps {
                 sh 'docker-compose -f $DOCKER_COMPOSE up -d'
             }
         }
-        
+     
         stage('Test Deployment') {
             steps {
                 script {
