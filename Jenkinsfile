@@ -15,18 +15,6 @@ pipeline {
         }
         
       
-       // Étape: Analyse SonarQube
-        stage("SonarQube Analysis") {
-            steps {
-                withSonarQubeEnv('sonar-server') {
-                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=app-web-group1 \
-                    -Dsonar.projectKey=app-web-group1 '''
-                }
-            }
-        }
-
-        
-
         stage('OWASP Dependency Check') {
             steps {
                 script {
