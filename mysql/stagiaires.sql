@@ -4,6 +4,4 @@ CREATE TABLE IF NOT EXISTS stagiaires (
     prenom VARCHAR(255) NOT NULL,
     formation VARCHAR(255) NOT NULL
 );
-INSERT INTO stagiaires (nom, prenom, formation) VALUES
-('Dalila', 'DROUICHE', 'Devops'),
-('Mokrane', 'OURZIK', 'Devops');
+
