@@ -12,21 +12,31 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/dolydev/app-web-group1.git'
             }
         }
-	stage("Sonarqube Analysis "){
-            steps{
+        
+        stage('Sonarqube Analysis') {
+            steps {
                 withSonarQubeEnv('sonar-server') {
-                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=app-web-group1 \
-                    -Dsonar.projectKey=app-web-group1 '''
+                    // Utiliser le scanner SonarQube configuré dans Jenkins
+                    sh '''
+                        ${SCANNER_HOME}/bin/sonar-scanner \
+                        -Dsonar.projectKey=app-web-group1 \
+                        -Dsonar.projectName=app-web-group1 \
+                        -Dsonar.sources=./php \
+                        -Dsonar.host.url=$SONAR_HOST_URL \
+                        -Dsonar.login=$SONAR_AUTH_TOKEN
+                    '''
                 }
             }
         }
-        stage("quality gate"){
-           steps {
+        
+        stage('Quality Gate') {
+            steps {
                 script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token' 
+                    waitForQualityGate abortPipeline: true, credentialsId: 'Sonar-token'
                 }
-            } 
+            }
         }
+
         stage('Install Dependencies') {
             steps {
                 sh "npm install"
@@ -50,7 +60,7 @@ pipeline {
             }
         }
 
-        stage("Docker Build & Push") {
+        stage('Docker Build & Push') {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
@@ -61,19 +71,20 @@ pipeline {
             }
         }
 
-        stage("TRIVY Image Scan") {
+        stage('TRIVY Image Scan') {
             steps {
                 script {
                     sh "trivy image $DOCKER_IMAGE_NAME:latest > trivy.txt"
                 }
             }
         }
-	stage('Deploy to container') {
+
+        stage('Deploy to container') {
             steps {
                 sh 'docker-compose -f $DOCKER_COMPOSE up -d'
             }
         }
-     
+
         stage('Test Deployment') {
             steps {
                 script {
