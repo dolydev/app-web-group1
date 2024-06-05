@@ -3,7 +3,6 @@ pipeline {
 
     environment {
         DOCKER_COMPOSE = 'docker-compose.yaml'
-        DOCKER_IMAGE_NAME = 'dalila854/app-web-group1'
         SCANNER_HOME = tool 'sonar-scanner'
     }
 
@@ -32,24 +31,11 @@ pipeline {
             }
         }
 
-        stage('Docker Build & Push') {
-            steps {
-                script {
-                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
-                        sh "docker build -t $DOCKER_IMAGE_NAME ."
-                        sh "docker push $DOCKER_IMAGE_NAME:latest"
                     }
                 }
             }
         }
 
-        stage('TRIVY Image Scan') {
-            steps {
-                script {
-                    sh "trivy image $DOCKER_IMAGE_NAME:latest > trivy.txt"
-                }
-            }
-        }
 
         stage('Deploy to container') {
             steps {
@@ -70,3 +56,5 @@ pipeline {
         }
     }
 }
+x
+
