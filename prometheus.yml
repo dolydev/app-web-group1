@@ -4,7 +4,7 @@ global:
 scrape_configs:
   - job_name: 'cadvisor'
     static_configs:
-      - targets: ['cadvisor:8080']
+      - targets: ['cadvisor:8081'] # Modification du port pour correspondre à la nouvelle configuration
 
   - job_name: 'php_app'
     static_configs:
