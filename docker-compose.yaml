@@ -3,28 +3,32 @@ version: '3.8'
 services:
   php:
     image: php:8.2-apache
-    deploy:
-      replicas: 3  # Nombre de répliques du service à exécuter
+    container_name: php82
     ports:
       - 8000:80
     volumes:
       - ./php:/var/www/html
+    build:
+      context: .
+      dockerfile: Dockerfile
 
   db:
     image: mysql:8.0
+    container_name: mysql8
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: pass
       MYSQL_DATABASE: demo
       MYSQL_USER: test
       MYSQL_PASSWORD: pass
-    deploy:
-      replicas: 1  # Pour les bases de données, souvent une seule réplique est suffisante
+    ports:
+      - 3307:3306
     volumes:
       - ./mysql/stagiaires.sql:/docker-entrypoint-initdb.d/stagiaires.sql:ro
 
   phpma:
     image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
     environment:
       PMA_ARBITRARY: 1
       PMA_HOST: db
@@ -33,4 +37,5 @@ services:
       UPLOAD_LIMIT: 20M
     ports:
       - 8899:80
-
+      
+  
