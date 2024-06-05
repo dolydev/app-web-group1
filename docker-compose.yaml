@@ -43,7 +43,7 @@ services:
     image: google/cadvisor:latest
     container_name: cadvisor
     ports:
-      - "8080:8080"
+      - "8081:8080" # Modification du port pour éviter le conflit
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /sys:/sys:ro
@@ -73,4 +73,23 @@ services:
     environment:
       DATA_SOURCE_NAME: 'test:pass@tcp(db:3306)/'
     ports:
-      - "9104:9104"  
+      - "9104:9104"
+Ensuite, mettez à jour le fichier prometheus.yml pour qu'il scrape le nouveau port de cAdvisor :
+
+yaml
+Copier le code
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8081'] # Modification du port pour correspondre à la nouvelle configuration
+
+  - job_name: 'php_app'
+    static_configs:
+      - targets: ['php82:80']
+
+  - job_name: 'mysql'
+    static_configs:
+      - targets: ['mysql-exporter:9104']
