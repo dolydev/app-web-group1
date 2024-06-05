@@ -21,7 +21,7 @@ pipeline {
                     dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
                 }
             }
-        }
+        
 
         stage('Trivy FS Scan') {
             steps {
