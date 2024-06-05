@@ -51,6 +51,26 @@ pipeline {
                 }
             }
         }
+	stage('Prometheus Metrics') {
+            steps {
+                script {
+                    // Test de la connexion à Prometheus
+                    sh 'curl -v http://localhost:9090'
+                }
+            }
+        }
+
+        stage('Grafana Setup') {
+            steps {
+                script {
+                    // Configuration initiale de Grafana (si nécessaire)
+                    sh '''
+                    echo "Setup Grafana"
+                    '''
+                }
+            }
+        }
+
     }
 }
 
