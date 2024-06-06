@@ -59,6 +59,15 @@ pipeline {
                 }
             }
         }
+	stage('Check Services') {
+            steps {
+                script {
+                    sh 'docker-compose exec prometheus curl -v http://cadvisor:8081/metrics'
+                    sh 'docker-compose exec prometheus curl -v http://php82:80/metrics'
+                    sh 'docker-compose exec prometheus curl -v http://mysql-exporter:9104/metrics'
+                }
+            }
+        }
 
         stage('Grafana Setup') {
             steps {
