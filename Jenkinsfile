@@ -27,17 +27,7 @@ pipeline {
             }
         }
 
-        stage('Docker Build & Push') {
-            steps {
-                script {
-                    docker.build("$DOCKER_IMAGE_NAME")
-                    docker.withRegistry('https://registry.example.com', 'docker-credentials-id') {
-                        docker.image("$DOCKER_IMAGE_NAME").push('latest')
-                    }
-                }
-            }
-        }
-
+        
         stage('TRIVY Image Scan') {
             steps {
                 // Votre étape TRIVY Image Scan ici
