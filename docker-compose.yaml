@@ -1,53 +1,41 @@
-version: '3'
+version: '3.7'
 
 services:
-  php:
-    image: php:8.2-apache
-    container_name: php82
-    ports:
-      - 8000:80
-    volumes:
-      - ./php:/var/www/html
-    build:
-      context: .
-      dockerfile: Dockerfile
-
-  db:
-    image: mysql:8.0
-    container_name: mysql8
-    command: --default-authentication-plugin=mysql_native_password
-    environment:
-      MYSQL_ROOT_PASSWORD: pass
-      MYSQL_DATABASE: demo
-      MYSQL_USER: test
-      MYSQL_PASSWORD: pass
-    ports:
-      - 3307:3306
-    volumes:
-      - ./mysql/stagiaires.sql:/docker-entrypoint-initdb.d/stagiaires.sql:ro
-
-  phpma:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
-    environment:
-      PMA_ARBITRARY: 1
-      PMA_HOST: db
-      PMA_USER: root
-      PMA_PASSWORD: pass
-      UPLOAD_LIMIT: 20M
-    ports:
-      - 8899:80
-      
-  
   cadvisor:
     image: google/cadvisor:latest
     container_name: cadvisor
     ports:
-      - "8081:8080" # Modification du port pour éviter le conflit
+      - "8081:8080" # Remap the internal port 8080 to external port 8081
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /sys:/sys
+      - /var/lib/docker/:/var/lib/docker/
+
+  mysql-exporter:
+    image: prom/mysqld-exporter:latest
+    container_name: mysql-exporter
+    environment:
+      - DATA_SOURCE_NAME=root:password@tcp(mysql:3306)/
+    ports:
+      - "9104:9104"
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3306:3306"
+
+  php82:
+    image: php:8.2-apache
+    container_name: php82
+    ports:
+      - "80:80"
+    volumes:
+      - ./app:/var/www/html
 
   prometheus:
     image: prom/prometheus:latest
@@ -56,8 +44,6 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
 
   grafana:
     image: grafana/grafana:latest
@@ -67,10 +53,15 @@ services:
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
 
-  mysql-exporter:
-    image: prom/mysqld-exporter:latest
-    container_name: mysql-exporter
-    environment:
-      DATA_SOURCE_NAME: 'test:pass@tcp(db:3306)/'
-    ports:
-      - "9104:9104"
+  curl:
+    image: byrnedo/alpine-curl:latest
+    container_name: curl
+    depends_on:
+      - prometheus
+      - cadvisor
+      - php82
+      - mysql-exporter
+
+networks:
+  default:
+    driver: bridge
