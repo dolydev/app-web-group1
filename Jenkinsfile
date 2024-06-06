@@ -12,7 +12,8 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/dolydev/app-web-group1.git'
             }
         }
-
+        
+      
         stage('OWASP Dependency Check') {
             steps {
                 script {
@@ -30,6 +31,9 @@ pipeline {
             }
         }
 
+                
+
+
         stage('Deploy to container') {
             steps {
                 sh 'docker-compose -f $DOCKER_COMPOSE up -d'
@@ -43,12 +47,11 @@ pipeline {
                     sleep 30
 
                     // Test du conteneur déployé
-                    sh 'curl -v http://localhost:80'
+                    sh 'curl -v http://localhost:8000'
                 }
             }
         }
-
-        stage('Prometheus Metrics') {
+	stage('Prometheus Metrics') {
             steps {
                 script {
                     // Test de la connexion à Prometheus
@@ -56,13 +59,12 @@ pipeline {
                 }
             }
         }
-
-        stage('Check Services') {
+	stage('Check Services') {
             steps {
                 script {
-                    sh 'docker-compose run --rm curl curl -v http://cadvisor:8081/metrics'
-                    sh 'docker-compose run --rm curl curl -v http://php82:80/metrics'
-                    sh 'docker-compose run --rm curl curl -v http://mysql-exporter:9104/metrics'
+                    sh 'docker-compose exec prometheus curl -v http://cadvisor:8081/metrics'
+                    sh 'docker-compose exec prometheus curl -v http://php82:80/metrics'
+                    sh 'docker-compose exec prometheus curl -v http://mysql-exporter:9104/metrics'
                 }
             }
         }
@@ -77,5 +79,8 @@ pipeline {
                 }
             }
         }
+
     }
 }
+
+
