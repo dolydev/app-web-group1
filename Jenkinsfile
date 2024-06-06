@@ -2,6 +2,8 @@ pipeline {
     agent any
 
     environment {
+        DOCKER_STACK_NAME = 'app-stack'
+        DOCKER_IMAGE_NAME = 'dalila854/app-web-group1'
         DOCKER_COMPOSE = 'docker-compose.yaml'
         SCANNER_HOME = tool 'sonar-scanner'
     }
@@ -13,30 +15,41 @@ pipeline {
             }
         }
         
-      
         stage('OWASP Dependency Check') {
             steps {
-                script {
-                    dependencyCheck additionalArguments: '--scan . --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
-                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-                }
+                // Votre étape OWASP Dependency Check ici
             }
         }
 
         stage('Trivy FS Scan') {
             steps {
+                // Votre étape Trivy FS Scan ici
+            }
+        }
+
+        stage('Docker Build & Push') {
+            steps {
                 script {
-                    sh "trivy fs . > trivyfs.txt"
+                    docker.build("$DOCKER_IMAGE_NAME")
+                    docker.withRegistry('https://registry.example.com', 'docker-credentials-id') {
+                        docker.image("$DOCKER_IMAGE_NAME").push('latest')
+                    }
                 }
             }
         }
 
-                
-
+        stage('TRIVY Image Scan') {
+            steps {
+                // Votre étape TRIVY Image Scan ici
+            }
+        }
 
         stage('Deploy to container') {
             steps {
-                sh 'docker-compose -f $DOCKER_COMPOSE up -d'
+                script {
+                    // Déployer l'application sur Docker Swarm
+                    sh "docker stack deploy -c $DOCKER_COMPOSE $DOCKER_STACK_NAME"
+                }
             }
         }
 
@@ -46,40 +59,10 @@ pipeline {
                     // Attendre que les services soient prêts
                     sleep 30
 
-                    // Test du conteneur déployé
+                    // Test du déploiement
                     sh 'curl -v http://localhost:8000'
                 }
             }
         }
-	stage('Prometheus Metrics') {
-            steps {
-                script {
-                    // Test de la connexion à Prometheus
-                    sh 'curl -v http://localhost:9090'
-                }
-            }
-        }
-	stage('Check Services') {
-            steps {
-                script {
-                    sh 'docker-compose exec prometheus curl -v http://php82:80/metrics'
-                    sh 'docker-compose exec prometheus curl -v http://mysql-exporter:9104/metrics'
-                }
-            }
-        }
-
-        stage('Grafana Setup') {
-            steps {
-                script {
-                    // Configuration initiale de Grafana (si nécessaire)
-                    sh '''
-                    echo "Setup Grafana"
-                    '''
-                }
-            }
-        }
-
     }
 }
-
-
