@@ -2,14 +2,18 @@ global:
   scrape_interval: 15s
 
 scrape_configs:
-  - job_name: 'cadvisor'
+  - job_name: 'prometheus'
     static_configs:
-      - targets: ['cadvisor:8081'] # Modification du port pour correspondre à la nouvelle configuration
-
-  - job_name: 'php_app'
+      - targets: ['192.168.176.131:9090']
+  - job_name: 'php'
     static_configs:
-      - targets: ['php82:80']
-
+      - targets: ['192.168.176.131:8000']
   - job_name: 'mysql'
     static_configs:
-      - targets: ['mysql-exporter:9104']
+      - targets: ['192.168.176.131:3306']
+  - job_name: 'phpmyadmin'
+    static_configs:
+      - targets: ['192.168.176.131:8899']
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['192.168.176.131:3000']
