@@ -14,18 +14,7 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/dolydev/app-web-group1.git'
             }
         }
-        
-        stage('OWASP Dependency Check') {
-            steps {
-                // Votre étape OWASP Dependency Check ici
-            }
-        }
-
-        stage('Trivy FS Scan') {
-            steps {
-                // Votre étape Trivy FS Scan ici
-            }
-        }
+     
 
         stage('Docker Build & Push') {
             steps {
