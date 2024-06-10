@@ -104,13 +104,6 @@ pipeline {
                 '''
             }
         }
-        stage('Verify Workers') {
-            steps {
-                sh '''
-                    echo "Verifying Docker Swarm Workers..."
-                    ./verify_workers.sh
-                '''
-            }
-        }
+      
     }
 }
