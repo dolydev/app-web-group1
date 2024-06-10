@@ -96,14 +96,7 @@ pipeline {
             }
         }
 
-        stage('Run Script at Root') {
-            steps {
-                sh '''
-                    echo "Running script at the root of the project..."
-                    ./serviceswarm.sh
-                '''
-            }
-        }
+      
       
     }
 }
