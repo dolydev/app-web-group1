@@ -3,7 +3,11 @@ pipeline {
 
     environment {
         DOCKER_COMPOSE = 'docker-compose.yaml'
-         SCANNER_HOME = tool 'sonar-scanner'
+        SCANNER_HOME = tool 'sonar-scanner'
+         DOCKER_IMAGE_NAME = 'image-file-rouge'
+        DOCKER_CONTAINER_NAME = 'site-greta'
+        DOCKER_REGISTRY_URL = 'your-docker-registry-url'
+        DOCKER_CREDENTIALS_ID = 'docker
     }
 
     stages {
@@ -51,6 +55,21 @@ pipeline {
         stage('Trivy FS Scan') {
             steps {
                 sh "trivy fs . > trivyfs.txt"
+            }
+        }
+         // Étape: Construction de l'image Docker
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.build("${DOCKER_IMAGE_NAME}:latest", "-f /home/dalila/app-web-group1/scripts/Dockerfile .")
+                }
+            }
+        }
+
+        // Étape: Analyse Trivy de l'image Docker
+        stage("Trivy Image Scan") {
+            steps {
+                sh "trivy image ${DOCKER_IMAGE_NAME}:latest > trivy.txt"
             }
         }
 
