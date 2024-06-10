@@ -39,43 +39,22 @@ pipeline {
                 }
             }
         }
-
-
-        stage('Build') {
+        // Étape: Analyse OWASP Dependency Check
+        stage('OWASP Dependency Check') {
             steps {
-                script {
-                    // Construire les images Docker définies dans le fichier docker-compose.yml
-                    sh 'docker-compose -f $DOCKER_COMPOSE build'
-                }
+                dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
 
-        stage('Deploy') {
+        // Étape: Analyse Trivy FS
+        stage('Trivy FS Scan') {
             steps {
-                script {
-                    // Déployer les conteneurs Docker en arrière-plan
-                    sh 'docker-compose -f $DOCKER_COMPOSE up -d'
-                }
+                sh "trivy fs . > trivyfs.txt"
             }
         }
 
-        stage('Test') {
-            steps {
-                script {
-                    // Ajoutez ici vos scripts de test
-                    // Par exemple, vous pouvez exécuter des tests HTTP pour vérifier que le serveur web est en cours d'exécution
-                    sh '''
-                    echo "Waiting for services to be ready..."
-                    sleep 30
-                    echo "Testing PHP container..."
-                    curl -f http://localhost:8000 || exit 1
-                    echo "Testing phpMyAdmin..."
-                    curl -f http://localhost:8899 || exit 1
-    
-                    '''
-                }
-            }
-        }
+      
 
      
     }
