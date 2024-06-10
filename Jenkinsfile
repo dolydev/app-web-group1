@@ -6,7 +6,15 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
+
+        // Étape: Nettoyer l'espace de travail
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        //Etape : recuperer le code dans github
+        stage('Checkout FROM GIT') {
             steps {
                 // Cloner le dépôt de votre code source
                 git branch: 'main', url: 'https://github.com/dolydev/app-web-group1.git'
