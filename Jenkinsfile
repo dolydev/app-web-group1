@@ -7,7 +7,7 @@ pipeline {
          DOCKER_IMAGE_NAME = 'image-file-rouge'
         DOCKER_CONTAINER_NAME = 'site-greta'
         DOCKER_REGISTRY_URL = 'your-docker-registry-url'
-        DOCKER_CREDENTIALS_ID = 'docker
+        DOCKER_CREDENTIALS_ID = 'docker'
     }
 
     stages {
