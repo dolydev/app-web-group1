@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Variables
-IMAGE_NAME="dalila854/app-web-group1"# Nom de l'image Docker
+IMAGE_NAME="dalila854/image-file-rouge"# Nom de l'image Docker
 IMAGE_TAG="latest" # Tag de l'image Docker
-SERVICE_NAME="wordpress_service" # Nom du service Docker
+SERVICE_NAME="serviceswarm" # Nom du service Docker
 PORT_MAPPING="8088:80" # Mappage de port pour le service Docker
-WORKER_NODES=("192.168.198.154" "192.168.198.155") # Liste des nœuds de travail
+WORKER_NODES=("192.168.176.129") # Liste des nœuds de travail
 
 # Télécharger l'image sur chaque nœud
 echo "Téléchargement de l'image sur le nœud principal..."
