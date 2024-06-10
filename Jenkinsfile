@@ -61,7 +61,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${DOCKER_IMAGE_NAME}:latest", "-f /home/dalila/app-web-group1/Dockerfile .")
+                    docker.build("${DOCKER_IMAGE_NAME}:latest", "-f Dockerfile .")
                 }
             }
         }
