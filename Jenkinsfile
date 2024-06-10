@@ -72,8 +72,18 @@ pipeline {
                 sh "trivy image ${DOCKER_IMAGE_NAME}:latest > trivy.txt"
             }
         }
-
-      
+         // Étape: Exécution du conteneur Docker
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                        sh """
+                        docker run --name ${DOCKER_CONTAINER_NAME} -p 8801:80 -d \${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:latest
+                        """
+                    }
+                }
+            }
+        }
 
      
     }
