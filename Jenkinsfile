@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         DOCKER_COMPOSE = 'docker-compose.yaml'
+         SCANNER_HOME = tool 'sonar-scanner'
     }
 
     stages {
@@ -20,6 +21,17 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/dolydev/app-web-group1.git'
             }
         }
+
+         // Étape: Analyse SonarQube
+        stage("SonarQube Analysis") {
+            steps {
+                withSonarQubeEnv('sonar-server') {
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=site_greta \
+                    -Dsonar.projectKey=site_greta '''
+                }
+            }
+        }
+
 
         stage('Build') {
             steps {
