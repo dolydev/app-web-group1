@@ -40,14 +40,6 @@ pipeline {
             }
         }
 
-        // Étape: Installation des dépendances
-        stage('Install Dependencies') {
-            steps {
-                sh "npm install"
-            }
-        }
-
-
 
         stage('Build') {
             steps {
