@@ -31,6 +31,22 @@ pipeline {
                 }
             }
         }
+          // Étape: Vérification de la qualité
+        stage("Quality Gate Check") {
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token'
+                }
+            }
+        }
+
+        // Étape: Installation des dépendances
+        stage('Install Dependencies') {
+            steps {
+                sh "npm install"
+            }
+        }
+
 
 
         stage('Build') {
