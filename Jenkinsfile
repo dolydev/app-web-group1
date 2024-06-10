@@ -9,7 +9,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Cloner le dépôt de votre code source
-                git branch: 'main', url: 'https://github.com/dolydev/projet-devops-greta78.git'
+                git branch: 'main', url: 'https://github.com/dolydev/app-web-group1.git'
             }
         }
 
