@@ -89,21 +89,25 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                         sh """
-                            docker run --name ${DOCKER_CONTAINER_NAME} -p 8000:80 -d \${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:latest
+                            docker run --name ${DOCKER_CONTAINER_NAME} -p 7000:80 -d \${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:latest
                         """
                     }
                 }
             }
         }
-    stage('Run Docker Container in worker') {
+
+        stage('Deploy to Docker Swarm') {
             steps {
-                sh '''
-                    echo "Running script at the root of the project..."
-                    ./serviceswarm.sh
-                '''
+                script {
+                    withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                        sh """
+                            docker login -u "\$DOCKER_USERNAME" -p "\$DOCKER_PASSWORD"
+                            docker stack deploy -c $DOCKER_COMPOSE ${DOCKER_CONTAINER_NAME}
+                            docker logout
+                        """
+                    }
+                }
             }
         }
-      
-      
     }
 }
