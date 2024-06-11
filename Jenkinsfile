@@ -96,18 +96,7 @@ pipeline {
             }
         }
 
-        stage('Deploy to Docker Swarm') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                        sh """
-                            docker login -u "\$DOCKER_USERNAME" -p "\$DOCKER_PASSWORD"
-                            docker stack deploy -c $DOCKER_COMPOSE ${DOCKER_CONTAINER_NAME}
-                            docker logout
-                        """
-                    }
-                }
-            }
-        }
+      
+      
     }
 }
