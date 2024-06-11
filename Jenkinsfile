@@ -95,7 +95,14 @@ pipeline {
                 }
             }
         }
-
+    stage('Run Docker Container in worker') {
+            steps {
+                sh '''
+                    echo "Running script at the root of the project..."
+                    ./serviceswarm.sh
+                '''
+            }
+        }
       
       
     }
