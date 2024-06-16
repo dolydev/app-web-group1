@@ -1,2 +1,21 @@
 ---
-# tasks file for role_create-users
+# tasks file for create-user
+
+- name: Créer un groupe
+  group:
+    name: "{{ groupname }}"
+    state: present
+
+- name: Créer un utilisateur
+  user:
+    name: "{{ username }}"
+    state: present
+    shell: /bin/bash
+    password: "{{ user_password | password_hash('sha512') }}"
+    groups: "{{ groupname }}"
+
+- name: Charger la clé SSH pour l'utilisateur
+  authorized_key:
+    user: "{{ username }}"
+    key: "{{ lookup('file', ssh_public_key_path) }}"
+    state: present
