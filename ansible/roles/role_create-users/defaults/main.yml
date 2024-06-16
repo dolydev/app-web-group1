@@ -1,2 +1,5 @@
 ---
-# defaults file for role_create-users
+# defaults file for create-user
+username: devops
+user_password: "test"
+groupname: "devops"
