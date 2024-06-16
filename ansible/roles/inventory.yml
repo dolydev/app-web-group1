@@ -1,9 +1,6 @@
-all: 
-    hosts:
-        worker1:
-            ansible_hosts: 192.168.176.129
-         worker2:
-            ansible_hosts: 192.168.176.133
-            [local]
-
-            
+all:
+  hosts:
+    worker1:
+      ansible_host: 192.168.176.129
+    worker2:
+      ansible_host: 192.168.176.133
