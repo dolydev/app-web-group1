@@ -1,2 +1,7 @@
 ---
-# handlers file for role_create-users
+# handlers file for create-user
+
+- name: Redémarrer le service sshd
+  service:
+    name: sshd
+    state: restarted
