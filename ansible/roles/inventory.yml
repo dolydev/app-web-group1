@@ -1,0 +1,5 @@
+all: 
+    hosts:
+        work1:
+            ansible_hosts: 192.168.174.138
+            
