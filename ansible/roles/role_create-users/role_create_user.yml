@@ -1,0 +1,10 @@
+- name: role create user
+  hosts: all
+  gather_facts: false
+  become: yes
+  vars:
+    ssh_public_key_path: '~/.ssh/known_hosts'
+  tasks:
+    - name: Inclure le rôle
+      ansible.builtin.include_role:
+        name: role_create-user
